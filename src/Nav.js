@@ -28,8 +28,14 @@ class Nav extends Component {
       if(error) {
         console.log(error);
       } else {
+        let network
+        if (netID === 1) network = 'Main'
+        else if (netID === 4) network = 'Rinkeby'
+        else if (netID === 3) network = 'Ropsten'
+        else if (netID === 42) network = 'Kovan'
+        else network = 'Custom'
         that.setState({
-              network: netID
+              network: network
         });
       }
     });
@@ -37,26 +43,22 @@ class Nav extends Component {
 
   render() {
     return (
-      <div id="navbar">
-        <div id="version-container">
-          <span class="key">Web3 Version</span>
-          <span class="value">{this.props.web3.version}</span>
-        </div>
-        <div id="settings-container">
-          <div class="outer">
-            <div id="account-container">
-              <span class="key">Account</span>
-              <span class="value">{this.state.accounts}</span>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+                <span>Account </span>
+                <span>{this.state.accounts}</span>
             </div>
-          </div>
-          <div class="outer">
-            <div id="network-container">
-              <span class="key">Network</span>
-              <span class="value">{this.state.network}</span>
+            <div class="col">
+                <ul class="pagination">
+                  <li class="page-item disabled"><a class="page-link">Network</a></li>
+                  <li class="page-item"><a class="page-link">{this.state.network}</a></li>
+                </ul>
             </div>
           </div>
         </div>
-      </div>
+      </nav>
 )
 
   }

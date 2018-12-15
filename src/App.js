@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
-//import logo from './logo.svg';
 import './App.css';
 import Nav from './Nav';
+import Status from './Status';
 
+import './css/bootstrap.min.css';
+import './css/font-awesome.min.css';
 const HumanStandardToken = require('./contracts/HumanStandardToken.json')
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.web3 = this.props.web3;
+    this.status = 'notdeployed';
     this.state = {
-      deployed : 'notdeployed',
+      status : 'notdeployed',
       accounts: null,
       web3error: false,
       tokenName: '',
@@ -19,6 +22,8 @@ class App extends Component {
       tokenDecimalPlaces: 0,
       tokenAddress: 0
     };
+    this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
   async componentDidMount() {
     this.web3.eth.getAccounts((error, accounts) => {
@@ -29,9 +34,10 @@ class App extends Component {
       }
     });
   }
-
+  //async submitToken(e) {  }
   async onSubmit(e) {
     e.preventDefault();
+    this.setState({ status: 'deploying' });
     // get our form data out of state
     const {tokenName, tokenSymbol, tokenTotalSupply, tokenDecimalPlaces} = this.state;
 
@@ -39,12 +45,14 @@ class App extends Component {
     const instance = await tokenContract
       .deploy({
         data: HumanStandardToken.bytecode,
-        arguments: [tokenName, tokenSymbol, tokenTotalSupply, tokenDecimalPlaces]})
+        arguments: [tokenTotalSupply, tokenName, tokenDecimalPlaces,tokenSymbol]})
       .send({ from: this.state.accounts[0] });
     // Aqui shauria de gestionar si el contracte no s'instancia be
-    this.setState({deployed: 'deployed'});
+    this.setState({status: 'deployed'});
     this.setState({tokenAddress: instance.options.address});
     console.log(`Address: ${instance.options.address}`);
+
+
   }
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
@@ -52,31 +60,34 @@ class App extends Component {
   render() {
     const {tokenName, tokenSymbol, tokenTotalSupply, tokenDecimalPlaces} = this.state;
 
-    if(this.state.deployed == 'notdeployed'){
       return (
         <div>
           <Nav web3={this.web3}/>
-          <h1>ERC20 Token generator</h1>
+          <h1 class="text-center">ERC20 Token generator</h1>
+          <div class="form-group container center_div col-md-4">
           <form onSubmit={this.onSubmit}>
-            Name of the token:
+           <label>Name of the token: </label>
              <input
+               class="form-control"
                required
                type="text"
                name="tokenName"
                value={tokenName}
                onChange={this.onChange}
              />
-             Symbol (ex. BTC, LTC, ETH...):
+             <label>Symbol (ex. BTC, LTC, ETH...):</label>
               <input
+                class="form-control"
                 required
                 type="text"
                 name="tokenSymbol"
                 value={tokenSymbol}
                 onChange={this.onChange}
               />
-              Total supply:
+              <label>Total supply:</label>
                <input
                  required
+                 class="form-control"
                  type="number"
                  min="1"
                  step="1"
@@ -84,8 +95,9 @@ class App extends Component {
                  value={tokenTotalSupply}
                  onChange={this.onChange}
                />
-               Decimal Places
+               <label>Decimal Places</label>
                 <input
+                  class="form-control"
                   required
                   type="number"
                   min="0"
@@ -94,18 +106,15 @@ class App extends Component {
                   value={tokenDecimalPlaces}
                   onChange={this.onChange}
                 />
-             <button type="submit">Submit</button>
+                <br></br>
+             <button type="submit" class="btn btn-primary center-block">Submit</button>
            </form>
+
+           <Status status={this.state.status} address={this.state.tokenAddress} />
+           </div>
+           <nav class="footer-copyright fixed-bottom navbar-light bg-light text-center">Adrià Quesada, code on Github</nav>
         </div>
       );
-    } else if (this.state.deployed == 'deployed') {
-      return(
-        <div>
-        <Nav web3={this.web3}/>
-        <h1>ERC20 Token generator</h1>
-        {this.state.tokenAddress}</div>
-      );
-    }
   }
 }
 
