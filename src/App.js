@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Nav from './Nav';
 import Status from './Status';
+import Favicon from 'react-favicon';
 
 import './css/bootstrap.min.css';
 import './css/font-awesome.min.css';
@@ -27,6 +28,7 @@ class App extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
   async componentDidMount() {
+     document.title = "ERC20 Token Generator";
     this.web3.eth.getAccounts((error, accounts) => {
       if (error) {
         this.setState({ web3error: true });
@@ -79,6 +81,7 @@ class App extends Component {
 
       return (
         <div>
+          <Favicon url="https://seeklogo.com/images/E/ethereum-logo-DE26DD608D-seeklogo.com.png" />
           <Nav network={this.state.network} accounts={this.state.accounts}/>
           <h1 class="text-center">ERC20 Token generator</h1>
           <div class="form-group container center_div col-md-4">
