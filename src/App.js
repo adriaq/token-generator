@@ -14,6 +14,7 @@ class App extends Component {
     this.status = 'notdeployed';
     this.state = {
       status : 'notdeployed',
+      network: '',
       accounts: null,
       web3error: false,
       tokenName: '',
@@ -31,6 +32,22 @@ class App extends Component {
         this.setState({ web3error: true });
       } else {
         this.setState({ accounts: accounts });
+      }
+    });
+    var that = this;
+    this.web3.eth.net.getId(function(error, netID) {
+      if(error) {
+        console.log(error);
+      } else {
+        let network
+        if (netID === 1) network = 'Main'
+        else if (netID === 4) network = 'Rinkeby'
+        else if (netID === 3) network = 'Ropsten'
+        else if (netID === 42) network = 'Kovan'
+        else network = 'Custom'
+        that.setState({
+              network: network
+        });
       }
     });
   }
@@ -62,7 +79,7 @@ class App extends Component {
 
       return (
         <div>
-          <Nav web3={this.web3}/>
+          <Nav network={this.state.network} accounts={this.state.accounts}/>
           <h1 class="text-center">ERC20 Token generator</h1>
           <div class="form-group container center_div col-md-4">
           <form onSubmit={this.onSubmit}>
@@ -109,10 +126,9 @@ class App extends Component {
                 <br></br>
              <button type="submit" class="btn btn-primary center-block">Submit</button>
            </form>
-
            <Status status={this.state.status} address={this.state.tokenAddress} />
            </div>
-           <nav class="footer-copyright fixed-bottom navbar-light bg-light text-center">Adrià Quesada, code on Github</nav>
+           <nav class="footer-copyright fixed-bottom navbar-light bg-light text-center">Made by Adrià Quesada, code on <a href="https://github.com/adriaq/token-generator"> Github</a></nav>
         </div>
       );
   }

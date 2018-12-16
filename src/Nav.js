@@ -11,53 +11,33 @@ class Nav extends Component {
       accounts: null,
     };
   }
-  async componentDidMount() {
-    var that = this
-    this.web3.eth.getAccounts(function(error, accounts) {
-      if(error) {
-        that.setState({
-              web3error: true
-        });
-      } else {
-        that.setState({
-              accounts: accounts
-        });
-      }
-    });
-    this.web3.eth.net.getId(function(error, netID) {
-      if(error) {
-        console.log(error);
-      } else {
-        let network
-        if (netID === 1) network = 'Main'
-        else if (netID === 4) network = 'Rinkeby'
-        else if (netID === 3) network = 'Ropsten'
-        else if (netID === 42) network = 'Kovan'
-        else network = 'Custom'
-        that.setState({
-              network: network
-        });
-      }
-    });
-  }
+
 
   render() {
     return (
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
+
+        <ul class="navbar-nav">
           <div class="row">
-            <div class="col">
-                <span>Account </span>
-                <span>{this.state.accounts}</span>
-            </div>
-            <div class="col">
-                <ul class="pagination">
-                  <li class="page-item disabled"><a class="page-link">Network</a></li>
-                  <li class="page-item"><a class="page-link">{this.state.network}</a></li>
-                </ul>
+            <div class="col-md-12 text-center">
+              <div class="float-md-left">
+                  <span><strong>Account: </strong></span>
+                  <span> {this.props.accounts}</span>
+              </div>
             </div>
           </div>
-        </div>
+        </ul>
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <span><strong>Network</strong></span>
+                <span class="badge badge-info">{this.props.network}</span>
+              </li>
+              <li class="nav-item">
+                <span><strong>Connection Status</strong></span>
+                <ConnectionStatus accounts={this.props.accounts}/>
+              </li>
+            </ul>
+
       </nav>
 )
 
@@ -65,3 +45,9 @@ class Nav extends Component {
 }
 
 export default Nav;
+
+function ConnectionStatus(props) {
+    if(props.accounts != null) {
+      return <span class="badge badge-success">Connected</span>
+    } else return  <span class="badge badge-danger">Not connected</span>
+}
