@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Nav from './Nav';
-import Status from './Status';
+//import Status from './Status';
 import Favicon from 'react-favicon';
 
 import './css/bootstrap.min.css';
@@ -16,7 +16,7 @@ class App extends Component {
       status : 'notdeployed',
       network: '',
       accounts: null,
-      web3error: false,
+      web3error: true,
       tokenName: '',
       tokenSymbol: '',
       tokenTotalSupply: 1,
@@ -35,8 +35,12 @@ class App extends Component {
       if (error) {
         this.setState({ web3error: true });
       } else {
-        this.setState({ accounts: accounts });
-      }
+
+	if(accounts[0] != null) { 
+            this.setState({ accounts: accounts });
+	    this.setState({ web3error: false });
+	}  
+    }
     });
     var that = this;
     this.props.web3.eth.net.getId(function(error, netID) {
@@ -80,8 +84,7 @@ class App extends Component {
   }
   render() {
     const {tokenName, tokenSymbol, tokenTotalSupply, tokenDecimalPlaces} = this.state;
-    var SubmitCss = 'btn btn-primary center-block';
-    if(this.state.web3error === true) SubmitCss = 'btn btn-disabled center-block'
+
       return (
         <div>
           <Favicon url="https://seeklogo.com/images/E/ethereum-logo-DE26DD608D-seeklogo.com.png" />
@@ -130,9 +133,9 @@ class App extends Component {
                   onChange={this.onChange}
                 />
                 <br></br>
-             <button type="submit" className={SubmitCss}>Submit</button>
+             <button type="submit" className='btn btn-primary center-block' disabled={this.state.web3error}>Submit</button>
            </form>
-           <Status status={this.state.status} address={this.state.tokenAddress} />
+           <Status status={this.state.status} address={this.state.tokenAddress} refresh={this.state.web3error} />
            </div>
            <nav className="footer-copyright fixed-bottom navbar-light bg-light text-center">Made by Adrià Quesada, code on <a href="https://github.com/adriaq/token-generator"> Github</a></nav>
         </div>
@@ -140,4 +143,32 @@ class App extends Component {
   }
 }
 
+
+function Status(props) {
+	if(props.refresh) { 
+	    return(<div class="alert alert-warning" role="alert">
+		  Please give permissions to Metamask to connect and refresh the page.
+		</div>)
+	} else {
+	    if (props.status === 'deployed') {
+	      return (
+		<div class="alert alert-success" role="alert">
+		  <span> Contract deployed at</span>
+		  <span>{props.address}</span>
+		</div>
+	      )
+	    } else if(props.status === 'deploying') {
+	      return (
+		<div class="alert alert-info" role="alert">
+		  Your contract is being deployed. Please wait
+		</div>
+	      )
+	    } else {
+	      return (<div></div>)
+	    }
+  }
+}
+
 export default App;
+
+

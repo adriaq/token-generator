@@ -4,34 +4,9 @@ class Status extends Component {
   constructor(props) {
     super(props);
     this.address = null;
-    this.state = {
-      accounts: null,
-    };
-  }
-  async componentDidMount() {
-    var that = this
-    this.web3.eth.getAccounts(function(error, accounts) {
-      if(error) {
-        that.setState({
-              web3error: true
-        });
-      } else {
-        that.setState({
-              accounts: accounts
-        });
-      }
-    });
-    this.web3.eth.net.getId(function(error, netID) {
-      if(error) {
-        console.log(error);
-      } else {
-        that.setState({
-              network: netID
-        });
-      }
-    });
-  }
 
+  }
+  
   render() {
     if (this.props.status === 'deployed') {
       return (
